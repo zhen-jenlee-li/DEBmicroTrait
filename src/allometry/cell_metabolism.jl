@@ -24,6 +24,12 @@ function relative_translation_efficiency_regression(rrn_copies::Vector{Float64})
     return 9.6./y
 end
 
+function gmax_regression(rrn_copies::Vector{Float64})
+    log2_rna = log2.(rrn_copies)
+    y = @. log2(0.06) + 1.03*log2_rna
+    return 2.0.^y
+end
+
 function enzyme_allocation(α_base, hydrolase_distr)
   genome_distr_norm = hydrolase_distr./sum(hydrolase_distr)
   closure = α_base.*genome_distr_norm

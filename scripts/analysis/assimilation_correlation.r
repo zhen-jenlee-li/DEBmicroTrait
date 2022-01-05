@@ -1,7 +1,7 @@
 library("PerformanceAnalytics")
 library("tidyverse")
 
-df <- read.csv("/Users/glmarschmann/.julia/dev/DEBmicroTrait/final_manuscript/files/isolates_assimilation.csv")
+df <- read.csv("/Users/glmarschmann/.julia/dev/DEBmicroTrait/files/isolates_assimilation_sav1.csv")
 
 df_norm <- df %>% 
   filter(transporter_density >1e-8) %>%
@@ -10,11 +10,12 @@ df_norm <- df %>%
          Vmax_log = log(Vmax),
          KD_log = log(KD),
          affinity_log = log(affinity),
+         #affinity_log = log(KD/Vmax)
          ) 
 
 df_numeric <- df_norm[,12:16]
-svg("/Users/glmarschmann/.julia/dev/DEBmicroTrait/final_manuscript/plots/test.svg")
+#svg("/Users/glmarschmann/.julia/dev/DEBmicroTrait/final_manuscript/plots/test.svg")
 chart.Correlation(df_numeric, histogram=TRUE, label="", method="spearman")
-dev.off()
+#dev.off()
 
 

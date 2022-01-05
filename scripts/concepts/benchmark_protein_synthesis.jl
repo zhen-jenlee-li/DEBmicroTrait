@@ -1,11 +1,10 @@
 using DEBmicroTrait
-using Gadfly
 using CSV, DataFrames, Statistics
 using GLM
 
 ################################################
 # I/O
-df = CSV.read("/Users/glmarschmann/.julia/dev/DEBmicroTrait/manuscript/files/dethlefsen_schmidt_2008.csv", DataFrame, missingstring="N/A")
+df = CSV.read("/Users/glmarschmann/.julia/dev/DEBmicroTrait/files/dethlefsen_schmidt_2008.csv", DataFrame, missingstring="N/A")
 gdf = groupby(df, :Species_Name)
 df = combine(gdf, :Protein_Quantity_Measurement => mean, :Size_Measurement => mean, :DNA_Quantity_Measurement => mean, :RNA_Quantity_Measurement => mean, :Specific_Growth_Rate_Measurement => mean, )
 df_out = DataFrame()
@@ -70,9 +69,6 @@ df_out.k_E_model = k_E_model
 # Statistics
 linearRegressor = lm(@formula(log(k_E) ~ log(k_E_model)), df_out)
 r2(linearRegressor)
-layer1 = layer(x=k_E_model, y=k_E, Geom.point)
-layer2 = layer(x=k_E, y=k_E, Geom.line)
-plt = plot(layer1, layer2, Guide.xlabel("Predicted translation rate [1/h]"), Guide.ylabel("Measured translation rate [1/h]"))
 # test for significant difference to 1-1 line
 df_out.diff = k_E_model-k_E
 linearRegressor = lm(@formula(diff ~ k_E_model), df_out)

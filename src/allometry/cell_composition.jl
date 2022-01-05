@@ -173,3 +173,7 @@ function surface_area_volume_ratio(V_c::Vector{Float64})
     A_c = @. π^(1/3)*(6*V_c)^(2/3)
     SAV = @. A_c/V_c
 end
+
+function sav_from_growth_rate(gmax::Vector{Float64})
+    SAV = @. -2.8*gmax + 9.3
+end

@@ -4,11 +4,13 @@ library(tidyverse)
 library(stringr)
 set.seed(1)
 
-df_train <- read.csv("/Users/glmarschmann/.julia/dev/DEBmicroTrait/final_manuscript/files/isolates_batch_model_train.csv")
+df_train <- read.csv("/Users/glmarschmann/.julia/dev/DEBmicroTrait/files/isolates_batch_model_train.csv")
 df_train$gramstain <- as.numeric(df_train$gramstain)
+df_train$yield <- 1- df_train$yield
 
-df_test <- read.csv("/Users/glmarschmann/.julia/dev/DEBmicroTrait/final_manuscript/files/isolates_batch_model_test.csv")
+df_test <- read.csv("/Users/glmarschmann/.julia/dev/DEBmicroTrait/files/isolates_batch_model_test.csv")
 df_test$gramstain <- as.numeric(df_test$gramstain)
+df_test$yield <- 1- df_test$yield
 
 # log transform data
 logdf_train <- log(df_train) %>%
@@ -63,9 +65,8 @@ varImpPlot(rf.bge)
 library(gbm)
 
 boost.bge = gbm(BGE~., data=logdf_train, distribution="gaussian", n.trees=500)
-svg("/Users/glmarschmann/.julia/dev/DEBmicroTrait/final_manuscript/plots/batch_cue_regression_tree.svg")
+#svg("/Users/glmarschmann/.julia/dev/DEBmicroTrait/final_manuscript/plots/batch_cue_regression_tree.svg")
 summary(boost.bge)
-
 
 # partial dependence
 par(mfrow=c(1,2))
@@ -81,8 +82,24 @@ mean((yhat.boost-bge.test$BGE)^2)
 
 print(pretty.gbm.tree(boost.bge, i.tree = boost.bge$n.trees))
 
-
 # shrinkage parameter
 boost.boston = gbm(medv~., data=Boston[train,], distribution="gaussian", n.trees=500, interaction.depth=4, shrinkage=0.2, verbose=F)
 yhat.boost = predict(boost.boston, newdata=Boston[-train,], n.tress=500)
 mean((yhat.boost-boston.test)^2)
+
+df_all <- bind_rows(df_train, df_test)
+df_low <- df_all %>% filter(BGE < 0.25)
+df_high <- df_all %>% filter(BGE > 0.25)
+lm.low <- lm(log(rho)~log(yield), df_low)
+summary(lm.low)
+lm.low.poly <- lm(log(rho)~poly(log(yield),3), df_low)
+summary(lm.low.poly)
+
+lm.high <- lm(log(rho)~log(yield), df_high)
+summary(lm.high)
+lm.high.poly <- lm(log(rho)~poly(log(yield),3), df_high)
+summary(lm.high.poly)
+
+write.csv(df_low, "/Users/glmarschmann/.julia/dev/DEBmicroTrait/files/isolates_batch_model_bge_low.csv")
+write.csv(df_high, "/Users/glmarschmann/.julia/dev/DEBmicroTrait/files/isolates_batch_model_bge_high.csv")
+

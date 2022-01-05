@@ -5,7 +5,7 @@ using HypothesisTests
 
 ########################################
 # I/O
-df_isolates     = CSV.read("/Users/glmarschmann/.julia/dev/DEBmicroTrait/final_manuscript/files/isolates2traits.csv", DataFrame, missingstring="N/A")
+df_isolates     = CSV.read("/Users/glmarschmann/.julia/dev/DEBmicroTrait/files/isolates2traits.csv", DataFrame, missingstring="N/A")
 ########################################
 
 ########################################
@@ -35,6 +35,8 @@ df_out.y_EV         = y_EV
 df_out.response     = df_isolates.Rhizosphere_response
 
 save("/Users/glmarschmann/.julia/dev/DEBmicroTrait/final_manuscript/files/isolates_protein_synthesis.jld", "kE", k_E, "yEV", y_EV, "mingt", Min_gen_time)
+CSV.write("/Users/glmarschmann/.julia/dev/DEBmicroTrait/files/isolates_protein_synthesis.csv", df_out)
+
 ########################################
 
 ########################################
